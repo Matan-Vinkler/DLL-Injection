@@ -1,0 +1,6 @@
+﻿  UseMyDLL.cpp
+C:\Cyber\DLLInjection\UseMyDLL\UseMyDLL\UseMyDLL.cpp(1,1): warning C4005: 'UNICODE': macro redefinition
+C:\Cyber\DLLInjection\UseMyDLL\UseMyDLL\UseMyDLL.cpp : message : see previous definition of 'UNICODE'
+C:\Cyber\DLLInjection\UseMyDLL\UseMyDLL\UseMyDLL.cpp(2,1): warning C4005: '_UNICODE': macro redefinition
+C:\Cyber\DLLInjection\UseMyDLL\UseMyDLL\UseMyDLL.cpp : message : see previous definition of '_UNICODE'
+  UseMyDLL.vcxproj -> C:\Cyber\DLLInjection\UseMyDLL\Debug\UseMyDLL.exe

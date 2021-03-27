@@ -1,0 +1,4 @@
+﻿  pch.cpp
+  dllmain.cpp
+     Creating library C:\Cyber\DLLInjection\MyDLL\x64\Debug\MyDLL.lib and object C:\Cyber\DLLInjection\MyDLL\x64\Debug\MyDLL.exp
+  MyDLL.vcxproj -> C:\Cyber\DLLInjection\MyDLL\x64\Debug\MyDLL.dll
