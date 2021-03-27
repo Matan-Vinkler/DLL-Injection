@@ -15,8 +15,9 @@ extern "C" void Keep() {
 
 BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-    if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+    if (ul_reason_for_call == DLL_PROCESS_ATTACH) // If the DLL has been loaded at startup or by LoadLibrary.
     {
+		// Display a message box
         MessageBox(NULL, L"DLL Injection!!", L"Ha Ha Ha", MB_ABORTRETRYIGNORE);
     }
 
