@@ -24,6 +24,11 @@ int main()
 
 	// Get the victim process handle
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, dwProcessID);
+	if (hProcess == NULL || hProcess == INVALID_HANDLE_VALUE)
+	{
+		std::cout << "Error: " << GetLastError() << "\n";
+		return GetLastError();
+	}
 
 	// Allocate some memory to load the DLL Path
 	PVOID pvAddr = VirtualAllocEx(hProcess, NULL, strlen(szPath) + 1, MEM_COMMIT, PAGE_READWRITE);
