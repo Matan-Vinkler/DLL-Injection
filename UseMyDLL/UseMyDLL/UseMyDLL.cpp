@@ -2,6 +2,49 @@
 #include <tchar.h>
 #include <Windows.h>
 
+bool InjectDLL(HANDLE hProcess, LPCSTR szPath)
+{
+
+	PVOID pfnLoadLibrary = (PVOID)GetProcAddress(LoadLibrary(L"Kernel32.dll"), "LoadLibraryA");
+	if (pfnLoadLibrary == NULL)
+	{
+		return false;
+	}
+
+	// Allocate some memory to load the DLL Path
+	PVOID pvAddr = VirtualAllocEx(hProcess, NULL, strlen(szPath) + 1, MEM_COMMIT, PAGE_READWRITE);
+	if (pvAddr == NULL)
+	{
+		return false;
+	}
+
+	// Load the DLL Path to the victim process address space
+	if (!WriteProcessMemory(hProcess, pvAddr, (LPVOID)szPath, strlen(szPath) + 1, 0))
+	{
+		return false;
+	}
+
+	// Inject the DLL to the victim process
+	HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pfnLoadLibrary, pvAddr, 0, NULL);
+	if (!hRemoteThread || hRemoteThread == INVALID_HANDLE_VALUE)
+	{
+		return false;
+	}
+
+	// Successful ouput
+	std::cout << "DLL Injected.\n";
+	std::cout << "Hacking succeeded!\n";
+
+	// Wait for the remote thread to be finished
+	WaitForSingleObject(hRemoteThread, INFINITE);
+
+	// Free the memory and close the handles
+	CloseHandle(hRemoteThread);
+	VirtualFreeEx(hProcess, pvAddr, 0, MEM_RELEASE);
+
+	return true;
+}
+
 int main()
 {
 	// DLL Path
@@ -30,39 +73,12 @@ int main()
 		return GetLastError();
 	}
 
-	// Allocate some memory to load the DLL Path
-	PVOID pvAddr = VirtualAllocEx(hProcess, NULL, strlen(szPath) + 1, MEM_COMMIT, PAGE_READWRITE);
-	if (pvAddr == NULL)
+	if (!InjectDLL(hProcess, szPath))
 	{
 		std::cout << "Error: " << GetLastError() << "\n";
 		return GetLastError();
 	}
-
-	// Load the DLL Path to the victim process address space
-	if (!WriteProcessMemory(hProcess, pvAddr, (LPVOID)szPath, strlen(szPath) + 1, 0))
-	{
-		std::cout << "Error: " << GetLastError() << "\n";
-		return GetLastError();
-	}
-
-	// Inject the DLL to the victim process
-	HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pfnLoadLibrary, pvAddr, 0, NULL);
-	if (!hRemoteThread || hRemoteThread == INVALID_HANDLE_VALUE)
-	{
-		std::cout << "Error: " << GetLastError() << "\n";
-		return GetLastError();
-	}
-
-	// Successful ouput
-	std::cout << "DLL Injected.\n";
-	std::cout << "Hacking succeeded!\n";
-
-	// Wait for the remote thread to be finished
-	WaitForSingleObject(hRemoteThread, INFINITE);
-
-	// Free the memory and close the handles
-	CloseHandle(hRemoteThread);
-	VirtualFreeEx(hProcess, pvAddr, 0, MEM_RELEASE);
+	
 	CloseHandle(hProcess);
 
 	return 0;
